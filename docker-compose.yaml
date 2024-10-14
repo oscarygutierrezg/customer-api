@@ -1,0 +1,9 @@
+version: '3.3'
+services:
+  customer-api:
+    container_name: customer-api
+    image: customer-api-server:latest
+    expose:
+      - 5000
+    ports:
+      - 5000:5000
