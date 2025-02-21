@@ -7,8 +7,8 @@ import (
 	"time"
 )
 
-type InMemoryClientRepository struct {
-	customers map[string]*domain.Client
+type InMemoryCustomerRepository struct {
+	customers map[string]domain.Customer
 }
 
 var names = []string{
@@ -24,19 +24,19 @@ var customerIds = []string{
 	"5b385b21-895c-4132-942c-79856eb9d287",
 }
 
-func NewInMemoryClientRepository() *InMemoryClientRepository {
+func NewInMemoryCustomerRepository() *InMemoryCustomerRepository {
 	rand.Seed(time.Now().UnixNano())
-	customers := make(map[string]*domain.Client)
+	customers := make(map[string]domain.Customer)
 
 	for i := 0; i < 6; i++ {
-		customers[customerIds[i]] = &domain.Client{
+		customers[customerIds[i]] = domain.Customer{
 			ID:     customerIds[i],
 			Name:   randomName(),
 			Active: i%2 == 0,
 		}
 	}
 
-	return &InMemoryClientRepository{
+	return &InMemoryCustomerRepository{
 		customers: customers,
 	}
 }
@@ -45,10 +45,15 @@ func randomName() string {
 	return names[rand.Intn(len(names))]
 }
 
-func (r *InMemoryClientRepository) GetClientByID(id string) (*domain.Client, error) {
+func (r *InMemoryCustomerRepository) FindByID(id string) (*domain.Customer, error) {
 	customer, exists := r.customers[id]
 	if !exists {
 		return nil, errors.New("customer not found")
 	}
-	return customer, nil
+	return &customer, nil
+}
+
+func (r *InMemoryCustomerRepository) Save(customer domain.Customer) error {
+	r.customers[customer.ID] = customer
+	return nil
 }
